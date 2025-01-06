@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/06 18:46:36 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/06 21:43:32 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,38 @@
 # include <signal.h>
 # include <unistd.h>
 # include <string.h>
+# include <pthread.h>
+
+typedef struct s_slack
+{
+    int philo_id;
+    int nb_repas_manger;
+    int time_beford_die;
+    int eat;
+    int sleep;
+    struct s_slack *next;
+} t_slack;
 
 typedef struct s_list
 {
-    int philo_id;
-	int philo_nb;
+    int philo_nb;
     int time2die;
     int time2eat;
     int time2sleep;
     int max_eat;
-    int fork_id;
-	struct s_list	*next;
-}					t_list;
+    t_slack *philo;
+} t_list;
 
-int	ft_isdigit(char *c);
+/*      init        */
 void init(t_list **slack, char **av, int i);
+
+/*      is digit        */
+int	ft_isdigit(char *c);
+
+
+/*      exit           */
+void ft_free_philosophers(t_slack *philo);
+void ft_free_list(t_list *slack);
 
 
 #endif

@@ -14,7 +14,7 @@ LIBFT_PATH = libft/
 LIBFT = $(LIBFT_PATH)libft.a
 
 # Source files
-PHILO_SRC = main.c init.c ft_isdigit.c
+PHILO_SRC = main.c init.c ft_isdigit.c exit.c
 
 # Object files
 PHILO_OBJS = $(addprefix $(OBJ_PATH), $(PHILO_SRC:.c=.o))
