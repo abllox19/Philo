@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 18:35:39 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/10 21:15:25 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/11 00:28:42 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,10 @@ t_slack *create_philosophers(int philo_nb)
 
 void init(t_list **slack, char **av, int i)
 {
+    struct  timeval time;
+
+    if (gettimeofday(&time, NULL) != 0)
+        perror("gettimeofday failed");
     if (!av || !slack)
         return;
     *slack = (t_list *)malloc(sizeof(t_list));
@@ -61,6 +65,7 @@ void init(t_list **slack, char **av, int i)
     (*slack)->time2die = atoi(av[2]);
     (*slack)->time2eat = atoi(av[3]);
     (*slack)->time2sleep = atoi(av[4]);
+    (*slack)->time = time.tv_sec;
     (*slack)->max_eat = (i == 1) ? atoi(av[5]) : -1;
 
     (*slack)->philo = create_philosophers((*slack)->philo_nb);

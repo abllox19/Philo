@@ -15,32 +15,86 @@
 
 pthread_mutex_t mutex;
 
+int philo_setup(t_list *slack, t_slack *philo)
+{
+    printf("bonjour je suis le philo nb %d.\n", philo->philo_id);
+    while (1)
+    {
+        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)
+        {
+            pthread_mutex_lock(&mutex);
+            philo->eat = 1;
+            pthread_mutex_unlock(&mutex);
+            usleep(slack->time2eat);
+            pthread_mutex_lock(&mutex);
+            philo->nb_repas_manger++;
+            pthread_mutex_unlock(&mutex);
+        }
+        else if (philo->sleep == 0)
+        {
+            pthread_mutex_lock(&mutex);
+            philo->sleep = 1;
+            pthread_mutex_unlock(&mutex);
+            usleep(slack->time2sleep);
+        }
+        else if (philo->think == 0)
+        {
+            pthread_mutex_lock(&mutex);
+            philo->think = 1;
+            pthread_mutex_unlock(&mutex);
+        }
+        else if (philo->eat == 2 && philo->sleep == 2)
+        {
+            pthread_mutex_lock(&mutex);
+            philo->think = 0;
+            philo->sleep = 0;
+            philo->eat = 0;
+            pthread_mutex_unlock(&mutex);
+        }
+        if (philo->nb_repas_manger >= slack->max_eat)
+            break ;
+        sleep(1);
+    }
+    return (1);
+}
+
 void* directeur(void* arg)
 {
     t_list *slack = (t_list*)arg;
 	t_slack *philo = slack->philo;
-    int i = 10;
-    while (i > 0)
-    {
-        pthread_mutex_lock(&mutex);
-        philo->eat = 1;
-        pthread_mutex_unlock(&mutex);
-        philo = philo->next;
-        sleep(1);
+    int i = slack->philo_nb;
 
-        pthread_mutex_lock(&mutex);
-        philo->sleep = 1;
-        pthread_mutex_unlock(&mutex);
+    while (i >= 0)
+    {
+        philo_setup(slack, philo);
         philo = philo->next;
-        sleep(1);
-        
-        pthread_mutex_lock(&mutex);
-        philo->think = 1;
-        pthread_mutex_unlock(&mutex);
-        philo = philo->next;
-        sleep(1);
         i--;
     }
+    printf("tout les philo on manger.\n");
+    exit(1);
+    // while (i > 0)
+    // {
+    //     if (philo->philo_id == 1)
+    //         philo = philo->next;
+    //     pthread_mutex_lock(&mutex);
+    //     philo->eat = 1;
+    //     pthread_mutex_unlock(&mutex);
+    //     philo = philo->next;
+    //     sleep(1);
+
+    //     pthread_mutex_lock(&mutex);
+    //     philo->sleep = 1;
+    //     pthread_mutex_unlock(&mutex);
+    //     philo = philo->next;
+    //     sleep(1);
+        
+    //     pthread_mutex_lock(&mutex);
+    //     philo->think = 1;
+    //     pthread_mutex_unlock(&mutex);
+    //     philo = philo->next;
+    //     sleep(1);
+    //     i--;
+    // }
     return NULL;
 }
 
@@ -49,7 +103,7 @@ void* surveillent(void* arg)
     t_list *slack = (t_list*)arg;
 	t_slack *philo = slack->philo;
     struct  timeval time;
-    int i;
+    long int i;
 
     while (1)
     {
@@ -58,26 +112,26 @@ void* surveillent(void* arg)
         i = time.tv_sec;
         if ((i - philo->time_beford_die) >= slack->time2die)
         {
-            printf("le philo nb %d est mort.\n", philo->philo_id);
+            printf("a %ld sec, le philo nb %d est mort.\n", i - slack->time, philo->philo_id);
             ft_free_list(slack);
         }
         if (philo->eat == 1)
         {
-            printf("le philo nb %d est en train de manger.\n", philo->philo_id);
+            printf("a %ld sec, le philo nb %d est en train de manger.\n", i - slack->time, philo->philo_id);
             pthread_mutex_lock(&mutex);
             philo->eat = 2;
             pthread_mutex_unlock(&mutex);
         }
         else if (philo->sleep == 1)
         {
-            printf("le philo nb %d est en train de dormir.\n", philo->philo_id);
+            printf("a %ld sec, le philo nb %d est en train de dormir.\n", i - slack->time, philo->philo_id);
             pthread_mutex_lock(&mutex);
             philo->sleep = 2;
             pthread_mutex_unlock(&mutex);
         }
         else if (philo->think == 1)
         {
-            printf("le philo nb %d est en train de penser.\n", philo->philo_id);
+            printf("a %ld sec, le philo nb %d est en train de penser.\n", i - slack->time, philo->philo_id);
             pthread_mutex_lock(&mutex);
             philo->think = 2;
             pthread_mutex_unlock(&mutex);

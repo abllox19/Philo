@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/10 21:08:53 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/11 00:27:18 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_list
     int time2eat;
     int time2sleep;
     int max_eat;
+    int time;
     t_slack *philo;
 } t_list;
 
