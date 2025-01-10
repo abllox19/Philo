@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/06 21:43:32 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/10 21:08:53 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,16 @@
 # include <stdlib.h>
 # include <signal.h>
 # include <unistd.h>
+# include <sys/time.h>
 # include <string.h>
 # include <pthread.h>
-
 typedef struct s_slack
 {
     int philo_id;
     int nb_repas_manger;
     int time_beford_die;
     int eat;
+    int think;
     int sleep;
     struct s_slack *next;
 } t_slack;

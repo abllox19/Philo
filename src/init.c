@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 18:35:39 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/06 21:09:38 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/10 21:15:25 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,12 @@ t_slack *create_philosophers(int philo_nb)
 {
     t_slack *head = NULL;
     t_slack *current = NULL;
+    struct  timeval time;
 	int i = 1;
 
+    if (gettimeofday(&time, NULL) != 0)
+        perror("gettimeofday failed");
+    printf("temps = %ld\n",  time.tv_sec);
     while (i <= philo_nb)
     {
         t_slack *new_node = (t_slack *)malloc(sizeof(t_slack));
@@ -28,9 +32,10 @@ t_slack *create_philosophers(int philo_nb)
         }
         new_node->philo_id = i;
         new_node->nb_repas_manger = 0;
-        new_node->time_beford_die = 0;
+        new_node->time_beford_die = time.tv_sec;
         new_node->sleep = 0;
         new_node->eat = 0;
+        new_node->think = 0;
         new_node->next = NULL;
 
         if (!head)
