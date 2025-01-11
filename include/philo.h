@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/11 00:27:18 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/11 19:56:43 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_slack
 
 typedef struct s_list
 {
+    int philo_id;
     int philo_nb;
     int time2die;
     int time2eat;

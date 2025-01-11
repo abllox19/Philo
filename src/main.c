@@ -15,8 +15,18 @@
 
 pthread_mutex_t mutex;
 
-int philo_setup(t_list *slack, t_slack *philo)
+void* philo_setup(void* arg)
 {
+    t_list *slack = (t_list*)arg;
+	t_slack *philo = slack->philo;
+    int i = slack->philo_id;
+
+    printf("philo nb  = %d.\n", slack->philo_id);
+    while (i > 1)
+    {
+        philo = philo->next;
+        i--;
+    }
     printf("bonjour je suis le philo nb %d.\n", philo->philo_id);
     while (1)
     {
@@ -55,46 +65,37 @@ int philo_setup(t_list *slack, t_slack *philo)
             break ;
         sleep(1);
     }
-    return (1);
+    return NULL;
 }
 
 void* directeur(void* arg)
 {
     t_list *slack = (t_list*)arg;
-	t_slack *philo = slack->philo;
+    pthread_t *thread;
     int i = slack->philo_nb;
 
-    while (i >= 0)
+    slack->philo_id = i;
+    thread = malloc((sizeof (pthread_t)) * slack->philo_nb);
+    while (i > 0)
     {
-        philo_setup(slack, philo);
-        philo = philo->next;
+        if (pthread_mutex_init(&mutex, NULL) != 0)
+        {
+            printf("Erreur : échec d'initialisation du mutex\n");
+            return NULL;
+        }
+        printf("lancement des philo\n");
+        if (pthread_create(&thread[i], NULL, philo_setup, slack) != 0)
+        {
+            printf("Erreur : impossible de créer le thread 1\n");
+            return NULL;
+        }
         i--;
+        slack->philo_id--;
     }
-    printf("tout les philo on manger.\n");
-    exit(1);
-    // while (i > 0)
-    // {
-    //     if (philo->philo_id == 1)
-    //         philo = philo->next;
-    //     pthread_mutex_lock(&mutex);
-    //     philo->eat = 1;
-    //     pthread_mutex_unlock(&mutex);
-    //     philo = philo->next;
-    //     sleep(1);
-
-    //     pthread_mutex_lock(&mutex);
-    //     philo->sleep = 1;
-    //     pthread_mutex_unlock(&mutex);
-    //     philo = philo->next;
-    //     sleep(1);
-        
-    //     pthread_mutex_lock(&mutex);
-    //     philo->think = 1;
-    //     pthread_mutex_unlock(&mutex);
-    //     philo = philo->next;
-    //     sleep(1);
-    //     i--;
-    // }
+    // pthread_join(thread[i], NULL);
+    // pthread_mutex_destroy(&mutex);
+    // printf("tout les philo on manger.\n");
+    // exit(1);
     return NULL;
 }
 
@@ -137,7 +138,7 @@ void* surveillent(void* arg)
             pthread_mutex_unlock(&mutex);
         }
 		philo = philo->next;
-        usleep(1000);
+        usleep(10);
     }
     return NULL;
 }
@@ -176,8 +177,8 @@ int main(int ac, char **av)
         return (printf("Erreur : impossible de créer le thread 1\n"));
     if (pthread_create(&thread2, NULL, surveillent, slack) != 0)
         return (printf("Erreur : impossible de créer le thread 2\n"));
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
+    pthread_join(thread1, NULL);// a securiser
+    pthread_join(thread2, NULL);// a securiser
     pthread_mutex_destroy(&mutex);
     printf("Tous les threads sont terminés.\n");
     return 0;
