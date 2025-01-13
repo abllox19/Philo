@@ -19,9 +19,9 @@ void* philo_setup(void* arg)
 {
     t_list *slack = (t_list*)arg;
 	t_slack *philo = slack->philo;
+    struct timeval time;
     int i = slack->philo_id;
 
-    printf("philo nb  = %d.\n", slack->philo_id);
     while (i > 1)
     {
         philo = philo->next;
@@ -30,6 +30,8 @@ void* philo_setup(void* arg)
     printf("bonjour je suis le philo nb %d.\n", philo->philo_id);
     while (1)
     {
+        if (gettimeofday(&time, NULL) != 0)
+            perror("gettimeofday failed");
         if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)
         {
             pthread_mutex_lock(&mutex);
@@ -37,6 +39,7 @@ void* philo_setup(void* arg)
             pthread_mutex_unlock(&mutex);
             usleep(slack->time2eat);
             pthread_mutex_lock(&mutex);
+            philo->time_beford_die = time.tv_sec;
             philo->nb_repas_manger++;
             pthread_mutex_unlock(&mutex);
         }
@@ -63,7 +66,7 @@ void* philo_setup(void* arg)
         }
         if (philo->nb_repas_manger >= slack->max_eat)
             break ;
-        sleep(1);
+        usleep(100000);
     }
     return NULL;
 }
@@ -74,25 +77,26 @@ void* directeur(void* arg)
     pthread_t *thread;
     int i = slack->philo_nb;
 
-    slack->philo_id = i;
-    thread = malloc((sizeof (pthread_t)) * slack->philo_nb);
-    while (i > 0)
+    slack->philo_id = 1;
+    i--;
+    thread = malloc((sizeof(pthread_t)) * slack->philo_nb);
+    while (i >= 0)
     {
         if (pthread_mutex_init(&mutex, NULL) != 0)
         {
             printf("Erreur : échec d'initialisation du mutex\n");
             return NULL;
         }
-        printf("lancement des philo\n");
+        printf("lancement du philo nb %d\n", slack->philo_id);
         if (pthread_create(&thread[i], NULL, philo_setup, slack) != 0)
         {
-            printf("Erreur : impossible de créer le thread 1\n");
+            printf("Erreur : impossible de créer le thread %d\n", slack->philo_id);
             return NULL;
         }
         i--;
-        slack->philo_id--;
+        slack->philo_id++;
     }
-    // pthread_join(thread[i], NULL);
+        // pthread_join(thread[i], NULL);
     // pthread_mutex_destroy(&mutex);
     // printf("tout les philo on manger.\n");
     // exit(1);
@@ -105,13 +109,14 @@ void* surveillent(void* arg)
 	t_slack *philo = slack->philo;
     struct  timeval time;
     long int i;
+    int j = 0;
 
     while (1)
     {
         if (gettimeofday(&time, NULL) != 0)
             perror("gettimeofday failed");
         i = time.tv_sec;
-        if ((i - philo->time_beford_die) >= slack->time2die)
+        if ((i - philo->time_beford_die) >= slack->time2die && slack->max_eat <= philo->nb_repas_manger)
         {
             printf("a %ld sec, le philo nb %d est mort.\n", i - slack->time, philo->philo_id);
             ft_free_list(slack);
@@ -136,6 +141,23 @@ void* surveillent(void* arg)
             pthread_mutex_lock(&mutex);
             philo->think = 2;
             pthread_mutex_unlock(&mutex);
+        }
+        if (philo->nb_repas_manger >= slack->max_eat)
+        {
+            j = philo->philo_id;
+            philo = philo->next;
+            while (philo->philo_id != j)
+            {
+                if (philo->nb_repas_manger >= slack->max_eat)
+                    philo = philo->next;
+                else
+                    break ;
+            }
+            if (philo->philo_id == j)
+            {
+                printf("Tous les philo on manger.\n");
+                ft_free_list(slack);
+            }
         }
 		philo = philo->next;
         usleep(10);
