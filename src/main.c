@@ -15,6 +15,19 @@
 
 pthread_mutex_t mutex;
 
+int fork_dispo(t_slack *philo)
+{
+    
+    if (philo->fork == 0 && philo->next->fork == 0)
+    {
+        philo->fork = 1;
+        philo->next->fork = 1;
+        printf("le philo nb %d a pris les fourchettes de gauche et de droite.\n", philo->philo_id);
+        return (1);
+    }
+    return (0);
+}
+
 void* philo_setup(void* arg)
 {
     t_list *slack = (t_list*)arg;
@@ -27,20 +40,23 @@ void* philo_setup(void* arg)
         philo = philo->next;
         i--;
     }
-    printf("bonjour je suis le philo nb %d.\n", philo->philo_id);
     while (1)
     {
-        if (gettimeofday(&time, NULL) != 0)
-            perror("gettimeofday failed");
-        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)
+        gettimeofday(&time, NULL);
+        long seconds = time.tv_sec;
+        long milliseconds = time.tv_usec / 1000;
+        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat && fork_dispo(philo) == 1)
         {
+            printf("le philo a manger %d repat sur %d.\n", philo->nb_repas_manger, slack->max_eat);
             pthread_mutex_lock(&mutex);
             philo->eat = 1;
+            philo->time_beford_die = seconds * 1000 + milliseconds + 1000;
             pthread_mutex_unlock(&mutex);
             usleep(slack->time2eat);
             pthread_mutex_lock(&mutex);
-            philo->time_beford_die = time.tv_sec;
             philo->nb_repas_manger++;
+            philo->fork = 0;
+            philo->next->fork = 0;
             pthread_mutex_unlock(&mutex);
         }
         else if (philo->sleep == 0)
@@ -95,6 +111,7 @@ void* directeur(void* arg)
         }
         i--;
         slack->philo_id++;
+        usleep(1000);
     }
         // pthread_join(thread[i], NULL);
     // pthread_mutex_destroy(&mutex);
@@ -103,9 +120,8 @@ void* directeur(void* arg)
     return NULL;
 }
 
-void* surveillent(void* arg)
+void surveillent(t_list *slack)
 {
-    t_list *slack = (t_list*)arg;
 	t_slack *philo = slack->philo;
     struct  timeval time;
     long int i;
@@ -113,12 +129,14 @@ void* surveillent(void* arg)
 
     while (1)
     {
-        if (gettimeofday(&time, NULL) != 0)
-            perror("gettimeofday failed");
-        i = time.tv_sec;
-        if ((i - philo->time_beford_die) >= slack->time2die && slack->max_eat <= philo->nb_repas_manger)
+        gettimeofday(&time, NULL);
+        long seconds = time.tv_sec;
+        long milliseconds = time.tv_usec / 1000;
+        i = seconds * 1000 + milliseconds + 1000;
+        if ((i - philo->time_beford_die) >= slack->time2die )//&& slack->max_eat <= philo->nb_repas_manger)
         {
             printf("a %ld sec, le philo nb %d est mort.\n", i - slack->time, philo->philo_id);
+            printf("temps de i %ld sec, temps du philo %d diff des deux %ld\n" ,i , philo->time_beford_die, philo->time_beford_die - i);
             ft_free_list(slack);
         }
         if (philo->eat == 1)
@@ -162,7 +180,7 @@ void* surveillent(void* arg)
 		philo = philo->next;
         usleep(10);
     }
-    return NULL;
+    return ;
 }
 
 int main(int ac, char **av)
@@ -170,7 +188,7 @@ int main(int ac, char **av)
     t_list  *slack;
     t_slack *philo;
     int     i = 1;
-    pthread_t thread1, thread2;
+    pthread_t thread1;
 
     if (ac != 5 && ac != 6)
         return (0);
@@ -184,7 +202,7 @@ int main(int ac, char **av)
         i = 1;
     init(&slack, av, i);
     philo = slack->philo;
-    printf("%d -> %d -> %d -> %d -> %d \n", slack->philo_nb, slack->time2die, slack->time2eat, slack->time2sleep, slack->max_eat);
+    printf("%d -> %ld -> %d -> %d -> %d \n", slack->philo_nb, slack->time2die, slack->time2eat, slack->time2sleep, slack->max_eat);
     while (philo)
     {
         printf("%d -> %d -> %d\n", philo->philo_id, philo->nb_repas_manger, philo->time_beford_die);
@@ -197,10 +215,9 @@ int main(int ac, char **av)
     printf("Début des threads\n");
     if (pthread_create(&thread1, NULL, directeur, slack) != 0)
         return (printf("Erreur : impossible de créer le thread 1\n"));
-    if (pthread_create(&thread2, NULL, surveillent, slack) != 0)
-        return (printf("Erreur : impossible de créer le thread 2\n"));
-    pthread_join(thread1, NULL);// a securiser
-    pthread_join(thread2, NULL);// a securiser
+    surveillent(slack);
+    // pthread_join(thread1, NULL);// a securiser
+    // pthread_join(thread2, NULL);// a securiser
     pthread_mutex_destroy(&mutex);
     printf("Tous les threads sont terminés.\n");
     return 0;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/11 19:56:43 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/15 00:25:41 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_slack
     int eat;
     int think;
     int sleep;
+    int fork;
     struct s_slack *next;
 } t_slack;
 
@@ -36,7 +37,7 @@ typedef struct s_list
 {
     int philo_id;
     int philo_nb;
-    int time2die;
+    long int time2die;
     int time2eat;
     int time2sleep;
     int max_eat;
