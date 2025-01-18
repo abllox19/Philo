@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/15 00:25:41 by marvin           ###   ########.fr       */
+/*   Updated: 2025/01/17 23:30:34 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ typedef struct s_slack
 {
     int philo_id;
     int nb_repas_manger;
-    int time_beford_die;
+    long int time_beford_die;
     int eat;
     int think;
     int sleep;
@@ -41,20 +41,21 @@ typedef struct s_list
     int time2eat;
     int time2sleep;
     int max_eat;
-    int time;
+    long int time;
     t_slack *philo;
 } t_list;
 
 /*      init        */
-void init(t_list **slack, char **av, int i);
+void        init(t_list **slack, char **av, int i);
+long int     get_time(void);
 
 /*      is digit        */
-int	ft_isdigit(char *c);
+int       ft_isdigit(char *c);
 
 
 /*      exit           */
-void ft_free_philosophers(t_slack *philo);
-void ft_free_list(t_list *slack);
+void    ft_free_philosophers(t_slack *philo);
+void    ft_free_list(t_list *slack);
 
 
 #endif

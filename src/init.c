@@ -3,25 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 18:35:39 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/15 00:13:33 by marvin           ###   ########.fr       */
+/*   Updated: 2025/01/18 00:10:11 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
+long int get_time(void)
+{
+    struct  timeval time;
+
+    if (gettimeofday(&time, NULL) != 0)
+        perror("gettimeofday failed");
+    return((time.tv_sec * 1000) + (time.tv_usec / 1000));
+}
+
 t_slack *create_philosophers(int philo_nb)
 {
     t_slack *head = NULL;
     t_slack *current = NULL;
-    struct  timeval time;
 	int i = 1;
 
-    if (gettimeofday(&time, NULL) != 0)
-        perror("gettimeofday failed");
-    printf("temps = %ld\n",  time.tv_sec);
+    printf("temps = %ld\n", get_time());
     while (i <= philo_nb)
     {
         t_slack *new_node = (t_slack *)malloc(sizeof(t_slack));
@@ -29,13 +35,9 @@ t_slack *create_philosophers(int philo_nb)
         {
             ft_free_philosophers(head);
             return NULL;
-        }    
-        struct timeval time;
-        gettimeofday(&time, NULL);
-        long seconds = time.tv_sec;
-        long milliseconds = time.tv_usec / 1000;
+        }
         new_node->philo_id = i;
-        new_node->time_beford_die = seconds * 1000 + milliseconds + 1000;
+        new_node->time_beford_die = get_time();
         new_node->nb_repas_manger = 0;
         new_node->sleep = 0;
         new_node->eat = 0;
@@ -57,11 +59,6 @@ t_slack *create_philosophers(int philo_nb)
 
 void init(t_list **slack, char **av, int i)
 {
-    struct timeval time;
-
-    gettimeofday(&time, NULL);
-    long milliseconds = time.tv_usec / 1000;
-    long seconds = time.tv_sec;
     if (!av || !slack)
         return;
     *slack = (t_list *)malloc(sizeof(t_list));
@@ -71,7 +68,7 @@ void init(t_list **slack, char **av, int i)
     (*slack)->time2die = atoi(av[2]);
     (*slack)->time2eat = atoi(av[3]);
     (*slack)->time2sleep = atoi(av[4]);
-    (*slack)->time = seconds * 1000 + milliseconds + 1000;
+    (*slack)->time = get_time();
     (*slack)->max_eat = (i == 1) ? atoi(av[5]) : -1;
     (*slack)->philo = create_philosophers((*slack)->philo_nb);
     if (!(*slack)->philo)

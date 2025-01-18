@@ -32,8 +32,7 @@ void* philo_setup(void* arg)
 {
     t_list *slack = (t_list*)arg;
 	t_slack *philo = slack->philo;
-    struct timeval time;
-    int i = slack->philo_id;
+    long int i = slack->philo_id;
 
     while (i > 1)
     {
@@ -42,17 +41,14 @@ void* philo_setup(void* arg)
     }
     while (1)
     {
-        gettimeofday(&time, NULL);
-        long seconds = time.tv_sec;
-        long milliseconds = time.tv_usec / 1000;
         if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat && fork_dispo(philo) == 1)
         {
             printf("le philo a manger %d repat sur %d.\n", philo->nb_repas_manger, slack->max_eat);
             pthread_mutex_lock(&mutex);
             philo->eat = 1;
-            philo->time_beford_die = seconds * 1000 + milliseconds + 1000;
+            philo->time_beford_die = get_time();
             pthread_mutex_unlock(&mutex);
-            usleep(slack->time2eat);
+            usleep(slack->time2eat * 100);
             pthread_mutex_lock(&mutex);
             philo->nb_repas_manger++;
             philo->fork = 0;
@@ -64,7 +60,7 @@ void* philo_setup(void* arg)
             pthread_mutex_lock(&mutex);
             philo->sleep = 1;
             pthread_mutex_unlock(&mutex);
-            usleep(slack->time2sleep);
+            usleep(slack->time2sleep * 100);
         }
         else if (philo->think == 0)
         {
@@ -82,7 +78,7 @@ void* philo_setup(void* arg)
         }
         if (philo->nb_repas_manger >= slack->max_eat)
             break ;
-        usleep(100000);
+        usleep(100);
     }
     return NULL;
 }
@@ -111,7 +107,7 @@ void* directeur(void* arg)
         }
         i--;
         slack->philo_id++;
-        usleep(1000);
+        usleep(100);
     }
         // pthread_join(thread[i], NULL);
     // pthread_mutex_destroy(&mutex);
@@ -123,20 +119,16 @@ void* directeur(void* arg)
 void surveillent(t_list *slack)
 {
 	t_slack *philo = slack->philo;
-    struct  timeval time;
     long int i;
     int j = 0;
 
     while (1)
     {
-        gettimeofday(&time, NULL);
-        long seconds = time.tv_sec;
-        long milliseconds = time.tv_usec / 1000;
-        i = seconds * 1000 + milliseconds + 1000;
+        i = get_time();
         if ((i - philo->time_beford_die) >= slack->time2die )//&& slack->max_eat <= philo->nb_repas_manger)
         {
             printf("a %ld sec, le philo nb %d est mort.\n", i - slack->time, philo->philo_id);
-            printf("temps de i %ld sec, temps du philo %d diff des deux %ld\n" ,i , philo->time_beford_die, philo->time_beford_die - i);
+            printf("temps de i %ld sec, temps du philo %ld diff des deux %ld\n" ,i , philo->time_beford_die, philo->time_beford_die - i);
             ft_free_list(slack);
         }
         if (philo->eat == 1)
@@ -178,7 +170,7 @@ void surveillent(t_list *slack)
             }
         }
 		philo = philo->next;
-        usleep(10);
+        usleep(100);
     }
     return ;
 }
@@ -202,10 +194,10 @@ int main(int ac, char **av)
         i = 1;
     init(&slack, av, i);
     philo = slack->philo;
-    printf("%d -> %ld -> %d -> %d -> %d \n", slack->philo_nb, slack->time2die, slack->time2eat, slack->time2sleep, slack->max_eat);
+    printf("%d -> %ld -> %d -> %d -> %d -> %ld\n", slack->philo_nb, slack->time2die, slack->time2eat, slack->time2sleep, slack->max_eat, slack->time);
     while (philo)
     {
-        printf("%d -> %d -> %d\n", philo->philo_id, philo->nb_repas_manger, philo->time_beford_die);
+        printf("%d -> %d -> %ld\n", philo->philo_id, philo->nb_repas_manger, philo->time_beford_die);
         philo = philo->next;
         if (philo == slack->philo)
             break;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 19:55:24 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/14 07:56:05 by marvin           ###   ########.fr       */
+/*   Updated: 2025/01/18 00:39:54 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void ft_free_philosophers(t_slack *philo)
 void ft_free_list(t_list *slack)
 {
     if (!slack)
-        return;
+        exit (1);
     if (slack->philo)
         ft_free_philosophers(slack->philo);
     free(slack);
