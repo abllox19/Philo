@@ -22,7 +22,8 @@ int fork_dispo(t_slack *philo)
     {
         philo->fork = 1;
         philo->next->fork = 1;
-        printf("le philo nb %d a pris les fourchettes de gauche et de droite.\n", philo->philo_id);
+        printf("le philo nb %d a pris la fourchettes de gauche.\n", philo->philo_id);
+        printf("le philo nb %d a pris la fourchettes de droite.\n", philo->philo_id);
         return (1);
     }
     return (0);
@@ -41,26 +42,31 @@ void* philo_setup(void* arg)
     }
     while (1)
     {
-        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat && fork_dispo(philo) == 1)
+        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)//&& fork_dispo(philo) == 1)
         {
-            printf("le philo a manger %d repat sur %d.\n", philo->nb_repas_manger, slack->max_eat);
-            pthread_mutex_lock(&mutex);
-            philo->eat = 1;
-            philo->time_beford_die = get_time();
-            pthread_mutex_unlock(&mutex);
-            usleep(slack->time2eat * 100);
-            pthread_mutex_lock(&mutex);
-            philo->nb_repas_manger++;
-            philo->fork = 0;
-            philo->next->fork = 0;
-            pthread_mutex_unlock(&mutex);
+            if (fork_dispo(philo) == 1)
+            {
+                printf("le philo a manger %d repat sur %d.\n", philo->nb_repas_manger, slack->max_eat);
+                pthread_mutex_lock(&mutex);
+                philo->eat = 1;
+                philo->time_beford_die = get_time();
+                pthread_mutex_unlock(&mutex);
+                usleep(slack->time2eat * 1000);
+                pthread_mutex_lock(&mutex);
+                philo->nb_repas_manger++;
+                philo->fork = 0;
+                philo->next->fork = 0;
+                pthread_mutex_unlock(&mutex);
+            }
+            else
+                ;
         }
         else if (philo->sleep == 0)
         {
             pthread_mutex_lock(&mutex);
             philo->sleep = 1;
             pthread_mutex_unlock(&mutex);
-            usleep(slack->time2sleep * 100);
+            usleep(slack->time2sleep * 1000);
         }
         else if (philo->think == 0)
         {
@@ -109,10 +115,11 @@ void* directeur(void* arg)
         slack->philo_id++;
         usleep(100);
     }
-        // pthread_join(thread[i], NULL);
-    // pthread_mutex_destroy(&mutex);
-    // printf("tout les philo on manger.\n");
-    // exit(1);
+    i = 0;
+    while (thread[i])
+        pthread_join(thread[i++], NULL);
+    pthread_mutex_destroy(&mutex);
+    free(thread);
     return NULL;
 }
 
