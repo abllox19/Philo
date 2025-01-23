@@ -42,12 +42,12 @@ void* philo_setup(void* arg)
     }
     while (1)
     {
-        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)//&& fork_dispo(philo) == 1)
+        if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)
         {
+            pthread_mutex_lock(&mutex);
             if (fork_dispo(philo) == 1)
             {
                 printf("le philo a manger %d repat sur %d.\n", philo->nb_repas_manger, slack->max_eat);
-                pthread_mutex_lock(&mutex);
                 philo->eat = 1;
                 philo->time_beford_die = get_time();
                 pthread_mutex_unlock(&mutex);
@@ -56,10 +56,10 @@ void* philo_setup(void* arg)
                 philo->nb_repas_manger++;
                 philo->fork = 0;
                 philo->next->fork = 0;
-                pthread_mutex_unlock(&mutex);
             }
             else
                 ;
+            pthread_mutex_unlock(&mutex);
         }
         else if (philo->sleep == 0)
         {
@@ -98,7 +98,17 @@ void* directeur(void* arg)
     slack->philo_id = 1;
     i--;
     thread = malloc((sizeof(pthread_t)) * slack->philo_nb);
-    while (i >= 0)
+    while (i >= 0) // if (pthread_mutex_init(&mutex, NULL) != 0)
+    // return (printf("Erreur : échec d'initialisation du mutex\n"));
+    printf("Début des threads\n");
+    directeur(slack);
+    surveillent(slack);
+    // pthread_join(thread1, NULL);// a securiser
+    // pthread_join(thread2, NULL);// a securiser
+    // pthread_mutex_destroy(&mutex);
+    return 0;
+}
+
     {
         if (pthread_mutex_init(&mutex, NULL) != 0)
         {
@@ -116,10 +126,20 @@ void* directeur(void* arg)
         usleep(100);
     }
     i = 0;
-    while (thread[i])
-        pthread_join(thread[i++], NULL);
-    pthread_mutex_destroy(&mutex);
-    free(thread);
+    // while (thread[i])
+    // pthread_join(thread[i++], NULL);
+    // pthread_mutex_destroy(&mutex);
+    // free(thread); // if (pthread_mutex_init(&mutex, NULL) != 0)
+    // return (printf("Erreur : échec d'initialisation du mutex\n"));
+    printf("Début des threads\n");
+    directeur(slack);
+    surveillent(slack);
+    // pthread_join(thread1, NULL);// a securiser
+    // pthread_join(thread2, NULL);// a securiser
+    // pthread_mutex_destroy(&mutex);
+    return 0;
+}
+
     return NULL;
 }
 
@@ -187,7 +207,6 @@ int main(int ac, char **av)
     t_list  *slack;
     t_slack *philo;
     int     i = 1;
-    pthread_t thread1;
 
     if (ac != 5 && ac != 6)
         return (0);
@@ -209,15 +228,13 @@ int main(int ac, char **av)
         if (philo == slack->philo)
             break;
     }
-    if (pthread_mutex_init(&mutex, NULL) != 0)
-        return (printf("Erreur : échec d'initialisation du mutex\n"));
+    // if (pthread_mutex_init(&mutex, NULL) != 0)
+    // return (printf("Erreur : échec d'initialisation du mutex\n"));
     printf("Début des threads\n");
-    if (pthread_create(&thread1, NULL, directeur, slack) != 0)
-        return (printf("Erreur : impossible de créer le thread 1\n"));
+    directeur(slack);
     surveillent(slack);
     // pthread_join(thread1, NULL);// a securiser
     // pthread_join(thread2, NULL);// a securiser
-    pthread_mutex_destroy(&mutex);
-    printf("Tous les threads sont terminés.\n");
+    // pthread_mutex_destroy(&mutex);
     return 0;
 }

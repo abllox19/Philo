@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 18:35:39 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/18 00:10:11 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/23 21:12:42 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void init(t_list **slack, char **av, int i)
     *slack = (t_list *)malloc(sizeof(t_list));
     if (!*slack)
         return;
+    (*slack)->mutex = atoi(av[1]);
     (*slack)->philo_nb = atoi(av[1]);
     (*slack)->time2die = atoi(av[2]);
     (*slack)->time2eat = atoi(av[3]);
