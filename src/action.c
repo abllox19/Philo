@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 19:25:21 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/28 19:33:07 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/28 21:16:11 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,21 @@ void	eat(pthread_mutex_t mutex, t_slack *philo ,t_list *slack)
 	}
 	else
 		;
+	pthread_mutex_unlock(&mutex);
+}
+
+
+void	sleepee(pthread_mutex_t mutex, t_slack *philo ,t_list *slack)
+{
+	pthread_mutex_lock(&mutex);
+	philo->sleep = 1;
+	pthread_mutex_unlock(&mutex);
+	usleep(slack->time2sleep * 1000);
+}
+
+void	think(pthread_mutex_t mutex, t_slack *philo)
+{
+	pthread_mutex_lock(&mutex);
+	philo->think = 1;
 	pthread_mutex_unlock(&mutex);
 }

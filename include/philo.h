@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:26:45 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/23 21:11:21 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/28 21:16:16 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,24 @@ typedef struct s_list
     t_slack *philo;
 } t_list;
 
+/*      action      */
+
+void	    eat(pthread_mutex_t mutex, t_slack *philo ,t_list *slack);
+void	    sleepee(pthread_mutex_t mutex, t_slack *philo ,t_list *slack);
+void	    think(pthread_mutex_t mutex, t_slack *philo);
+int         fork_dispo(t_slack *philo);
+
 /*      init        */
 void        init(t_list **slack, char **av, int i);
-long int     get_time(void);
+long int    get_time(void);
 
 /*      is digit        */
-int       ft_isdigit(char *c);
+int         ft_isdigit(char *c);
 
 
 /*      exit           */
-void    ft_free_philosophers(t_slack *philo);
-void    ft_free_list(t_list *slack);
+void        ft_free_philosophers(t_slack *philo);
+void        ft_free_list(t_list *slack);
 
 
 #endif

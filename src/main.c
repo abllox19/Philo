@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:22:33 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/28 19:41:13 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/28 21:16:21 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,37 +44,11 @@ void	*philo_setup(void *arg)
 	while (1)
 	{
 		if (philo->eat == 0 && philo->nb_repas_manger < slack->max_eat)
-		{
-			pthread_mutex_lock(&mutex);
-			if (fork_dispo(philo) == 1)
-			{
-				printf("le philo a manger %d repat sur %d.\n", philo->nb_repas_manger, slack->max_eat);
-				philo->eat = 1;
-				philo->time_beford_die = get_time();
-				pthread_mutex_unlock(&mutex);
-				usleep(slack->time2eat * 1000);
-				pthread_mutex_lock(&mutex);
-				philo->nb_repas_manger++;
-				philo->fork = 0;
-				philo->next->fork = 0;
-			}
-			else
-				;
-			pthread_mutex_unlock(&mutex);
-		}
+			eat(mutex, philo, slack);
 		else if (philo->sleep == 0)
-		{
-			pthread_mutex_lock(&mutex);
-			philo->sleep = 1;
-			pthread_mutex_unlock(&mutex);
-			usleep(slack->time2sleep * 1000);
-		}
+			sleepee(mutex, philo, slack);
 		else if (philo->think == 0)
-		{
-			pthread_mutex_lock(&mutex);
-			philo->think = 1;
-			pthread_mutex_unlock(&mutex);
-		}
+			think(mutex, philo);
 		else if (philo->eat == 2 && philo->sleep == 2)
 		{
 			pthread_mutex_lock(&mutex);
