@@ -6,14 +6,14 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 11:50:15 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/06 18:47:29 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/28 18:53:28 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 int	ft_isdigit(char *c)
 {
-	int i;
-	
+	int	i;
+
 	i = 1;
 	while (c[i])
 	{
