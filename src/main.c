@@ -6,7 +6,7 @@
 /*   By: asoumare <asoumare@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 17:22:33 by asoumare          #+#    #+#             */
-/*   Updated: 2025/01/28 21:16:21 by asoumare         ###   ########.fr       */
+/*   Updated: 2025/01/29 21:59:12 by asoumare         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	fork_dispo(t_slack *philo)
 	{
 		philo->fork = 1;
 		philo->next->fork = 1;
-		printf("le philo nb %d a pris la fourchettes de gauche.\n", philo->philo_id);
+		printf("le philo nb %d a pris la fourchettes de gauche.\n",philo->philo_id);
 		printf("le philo nb %d a pris la fourchettes de droite.\n", philo->philo_id);
 		return (1);
 	}

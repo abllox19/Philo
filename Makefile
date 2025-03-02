@@ -3,7 +3,7 @@
 #test:
 #	$(VALGRIND) ./votre_executable
 CFLAGS  = -Wall -Wextra -Werror
-LDFLAGS = -g3 #-fsanitize=thread
+LDFLAGS = -g3 -fsanitize=thread
 
 # Paths
 SRC_PATH = src/
